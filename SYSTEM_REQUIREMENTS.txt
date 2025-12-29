@@ -1,0 +1,262 @@
+================================================================================
+                    GCTU BIOMETRIC ATM SYSTEM - SYSTEM REQUIREMENTS
+================================================================================
+
+HARDWARE REQUIREMENTS
+======================
+
+MINIMUM SPECIFICATIONS (2024):
+- Processor: Intel Core i5-6000 series or AMD Ryzen 3 (2.5 GHz)
+- Memory: 8 GB RAM (increased for Windows Hello)
+- Storage: 5 GB available disk space
+- Graphics: DirectX 12 compatible
+- Network: Ethernet adapter or Wi-Fi 802.11ac
+- Camera: USB 3.0 HD webcam (720p minimum) or Windows Hello camera
+- TPM: TPM 2.0 chip (for Windows Hello security)
+- Ports: 3x USB ports minimum
+
+RECOMMENDED SPECIFICATIONS (2024):
+- Processor: Intel Core i7-8000 series or AMD Ryzen 7 (3.0 GHz+)
+- Memory: 16 GB RAM or higher
+- Storage: 10 GB available disk space (NVMe SSD preferred)
+- Graphics: Dedicated graphics card (for AI processing)
+- Network: Gigabit Ethernet or Wi-Fi 802.11ax (Wi-Fi 6)
+- Camera: Windows Hello infrared camera or 4K webcam
+- Biometric: Windows Hello fingerprint reader + face recognition
+- TPM: TPM 2.0 with secure boot enabled
+- Ports: 4x USB 3.0+ ports for peripherals
+
+BIOMETRIC HARDWARE (2024):
+- Webcam: 1080p minimum, 4K recommended, infrared preferred
+- Fingerprint Scanner: Windows Hello compatible (required)
+- Infrared Camera: For enhanced face recognition (highly recommended)
+- Liveness Detection: Hardware-based preferred
+- Lighting: Infrared illumination for consistent capture
+- Positioning: Stable mounting with adjustable angles
+- Security: TPM 2.0 chip for hardware-backed authentication
+
+SOFTWARE REQUIREMENTS
+======================
+
+OPERATING SYSTEM SUPPORT:
+
+Windows (Primary Platform):
+- Windows 10 Home/Pro/Enterprise (64-bit)
+- Windows 11 Home/Pro/Enterprise (64-bit)
+- Windows Server 2016/2019/2022 (for enterprise deployment)
+- .NET Framework 4.7.2 or higher
+- Visual C++ Redistributable 2015-2022
+
+Linux (Advanced Users):
+- Ubuntu 18.04 LTS or higher
+- CentOS 7/8 or RHEL 7/8
+- Debian 10 or higher
+- LAMP stack compatibility required
+
+macOS (Development Only):
+- macOS 10.15 Catalina or higher
+- Xcode Command Line Tools
+- Homebrew package manager
+
+WEB SERVER STACK:
+
+Apache HTTP Server:
+- Version 2.4.41 or higher
+- mod_rewrite enabled
+- mod_ssl enabled (for HTTPS)
+- mod_headers enabled
+- AllowOverride All configured
+
+MySQL Database:
+- MySQL 8.0 or higher (recommended)
+- MySQL 5.7 minimum supported
+- MariaDB 10.4+ (alternative)
+- InnoDB storage engine
+- UTF-8 character set support
+
+PHP Runtime (2024):
+- PHP 8.0 minimum, PHP 8.2+ recommended
+- Extensions required:
+  * mysqli or pdo_mysql
+  * openssl
+  * curl
+  * gd or imagick
+  * json
+  * mbstring
+  * session
+  * hash
+  * sodium (for encryption)
+- Memory limit: 512MB minimum, 1GB recommended
+- Max execution time: 300 seconds
+- File upload limit: 64MB minimum
+- OPcache enabled for performance
+
+Python Environment (2024):
+- Python 3.10 minimum, Python 3.11+ recommended
+- pip package manager
+- Virtual environment support (recommended)
+- Flask web framework for biometric service
+- Required packages (auto-installed via install_requirements.bat):
+  * opencv-python==4.8.1.78
+  * numpy==1.24.3
+  * face-recognition==1.3.0
+  * dlib==19.24.2
+  * cmake==3.27.7
+  * Pillow==10.0.1
+  * scipy==1.11.3
+  * scikit-image==0.21.0
+  * imutils==0.5.4
+  * pywin32==306 (for Windows Hello integration)
+  * winrt==1.0.21215.1 (Windows Hello API)
+  * winrt-Windows.Security.Credentials==1.0.0b0
+
+BROWSER REQUIREMENTS
+====================
+
+SUPPORTED BROWSERS:
+
+Google Chrome:
+- Version 90 or higher
+- WebAuthn API support
+- Camera/microphone permissions
+- JavaScript enabled
+- Cookies enabled
+
+Mozilla Firefox:
+- Version 88 or higher
+- WebAuthn API support
+- Camera/microphone permissions
+- JavaScript enabled
+- Cookies enabled
+
+Microsoft Edge:
+- Version 90 or higher (Chromium-based)
+- WebAuthn API support
+- Windows Hello integration
+- JavaScript enabled
+- Cookies enabled
+
+Safari (macOS only):
+- Version 14 or higher
+- WebAuthn API support
+- Camera permissions
+- JavaScript enabled
+- Cookies enabled
+
+BROWSER FEATURES REQUIRED:
+- WebAuthn/FIDO2 support for biometric hardware
+- getUserMedia API for camera access
+- Local Storage for theme preferences
+- Fetch API for AJAX requests
+- ES6 JavaScript support
+- CSS3 and HTML5 support
+
+NETWORK REQUIREMENTS
+====================
+
+BANDWIDTH:
+- Minimum: 1 Mbps download, 512 Kbps upload
+- Recommended: 10 Mbps download, 5 Mbps upload
+- Latency: <100ms for optimal performance
+- Concurrent users: 50 Mbps per 100 users
+
+PORTS AND PROTOCOLS:
+- HTTP: Port 80 (development)
+- HTTPS: Port 443 (production)
+- Python Service: Port 5000 (localhost only)
+- MySQL: Port 3306 (internal)
+- SSH: Port 22 (administration)
+- FTP/SFTP: Port 21/22 (file transfer)
+
+FIREWALL CONFIGURATION:
+- Allow inbound: 80, 443
+- Allow outbound: 80, 443, 53 (DNS)
+- Block: All other ports by default
+- DMZ: Recommended for production deployment
+
+SECURITY REQUIREMENTS
+=====================
+
+ENCRYPTION:
+- TLS 1.2 minimum, TLS 1.3 recommended
+- AES-256 encryption for biometric data
+- RSA 2048-bit or ECDSA P-256 certificates
+- Strong cipher suites only
+- Perfect Forward Secrecy (PFS)
+
+AUTHENTICATION:
+- Multi-factor authentication support
+- WebAuthn/FIDO2 compliance
+- Biometric template encryption
+- Session management with secure cookies
+- Password hashing with bcrypt/Argon2
+
+COMPLIANCE:
+- GDPR compliance for data protection
+- PCI DSS Level 1 for payment processing
+- ISO 27001 security management
+- Local banking regulations
+- Biometric data protection laws
+
+PERFORMANCE REQUIREMENTS
+========================
+
+RESPONSE TIMES (2024):
+- Page load: <2 seconds
+- Biometric verification: <3 seconds
+- Windows Hello authentication: <1 second
+- Python service startup: <5 seconds
+- HMAC verification: <50ms
+- Transaction processing: <1 second
+- Database queries: <500ms
+- API responses: <200ms
+- Liveness detection: <2 seconds
+
+THROUGHPUT:
+- Concurrent users: 100+ simultaneous
+- Transactions per second: 50+ TPS
+- Database connections: 200+ concurrent
+- File uploads: 10MB in <30 seconds
+- Biometric processing: <10 seconds per scan
+
+AVAILABILITY:
+- Uptime: 99.9% minimum (8.76 hours downtime/year)
+- Recovery time: <15 minutes
+- Backup frequency: Daily minimum
+- Disaster recovery: <4 hours RTO
+- Monitoring: 24/7 system health checks
+
+SCALABILITY:
+- Horizontal scaling support
+- Load balancer compatibility
+- Database replication support
+- CDN integration ready
+- Microservices architecture compatible
+
+DEVELOPMENT REQUIREMENTS
+========================
+
+DEVELOPMENT TOOLS:
+- Text Editor: VS Code, Sublime Text, or similar
+- Version Control: Git 2.0+
+- Database Tool: phpMyAdmin, MySQL Workbench
+- API Testing: Postman, Insomnia
+- Browser DevTools: Chrome/Firefox developer tools
+
+TESTING ENVIRONMENT:
+- Separate development database
+- Test user accounts and data
+- Biometric simulation capabilities
+- Error logging and debugging
+- Performance profiling tools
+
+DEPLOYMENT TOOLS:
+- FTP/SFTP client for file transfer
+- SSH client for server access
+- SSL certificate management
+- Backup and restore utilities
+- Monitoring and alerting systems
+
+================================================================================
+                          END OF SYSTEM REQUIREMENTS
+================================================================================

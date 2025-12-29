@@ -1,0 +1,19 @@
+# Core biometric processing requirements
+Flask==3.0.0
+opencv-python==4.8.1.78
+numpy==1.24.3
+face-recognition==1.3.0
+cmake==3.27.7
+Pillow==10.0.1
+
+# Additional utilities
+scipy==1.11.3
+scikit-image==0.21.0
+imutils==0.5.4
+
+# Windows Hello integration (Windows only)
+pywin32==306
+winrt-Windows.Security.Credentials
+winrt-Windows.Security.Credentials.UI
+python-dotenv==1.0.0
+mysql-connector-python==8.2.0

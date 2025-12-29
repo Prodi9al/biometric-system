@@ -1,0 +1,59 @@
+================================================================================
+FAIL-SECURE BIOMETRIC ATM SYSTEM - QUICK START GUIDE
+================================================================================
+
+DOWNLOADS NEEDED:
+1. XAMPP 8.2+: https://www.apachefriends.org/download.html
+2. Python 3.10+: https://www.python.org/downloads/
+
+INSTALLATION:
+1. Install XAMPP → Start Apache & MySQL
+2. Install Python → Check "Add to PATH"
+3. Extract system to C:\xampp\htdocs\biometric system\
+4. Setup database: Import database/clean-setup.sql in phpMyAdmin
+5. Install Python packages:
+   pip install opencv-python numpy face-recognition dlib
+
+START SYSTEM:
+1. Run: start-biometric-service.bat
+2. Access: http://localhost/biometric%20system/public/biometric-login-modern.php
+
+FAIL-SECURE FEATURES:
+✓ AUTHENTICATION ONLY SUCCEEDS ON POSITIVE VERIFICATION
+✓ SYSTEM DEFAULTS TO FAILURE FOR ANY ERROR
+✓ LIVE CAMERA FEED FOR FACE RECOGNITION
+✓ RESTART BIOMETRIC VERIFICATION FEATURE
+✓ STRICT 85%+ CONFIDENCE THRESHOLD
+✓ NO PASSKEY INTEGRATION - PURE BIOMETRIC
+
+TEST ACCOUNTS:
+Customer: 2023 8841 9920 1102 (PIN: 1234)
+Admin: ADM001 (Password: admin123)
+
+USING THE SYSTEM:
+1. Enter account number
+2. Click "Start Scan" - live camera feed appears
+3. Face scan captures from camera
+4. Fingerprint scan simulates hardware
+5. Use orange restart button to retry failed scans
+6. System only proceeds if BOTH pass 85% threshold
+
+REALISTIC BEHAVIOR:
+- Face verification: ~70% success rate
+- Fingerprint verification: ~75% success rate
+- Failed attempts show "Failed" status
+- Use restart button to try again
+
+TROUBLESHOOTING:
+- Authentication fails: Normal behavior, use restart button
+- No camera feed: Check browser permissions
+- Python service error: Run start-biometric-service.bat
+- Database error: Import database/clean-setup.sql
+
+SECURITY NOTES:
+- Implements FAIL-SECURE architecture
+- Authentication defaults to FAILURE
+- Only succeeds when ALL security checks pass
+- Raw biometric data deleted immediately
+
+================================================================================

@@ -1,0 +1,74 @@
+# Environment files
+.env
+.env.local
+.env.production
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+
+# Cache
+cache/
+
+# Node modules
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.bak
+*.backup
+
+# Python files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Biometric data (security)
+biometric_templates/
+raw_captures/
+*.bio
+*.template
+
+# Database dumps
+*.sql
+*.db
+*.sqlite
+
+# Virtual Environments
+venv/
+python/venv/
+env/
+
+# Debug and Temporary Scripts
+debug_*
+diagnose.py

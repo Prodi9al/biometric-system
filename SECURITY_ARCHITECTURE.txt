@@ -1,0 +1,131 @@
+================================================================================
+                    BIOMETRIC ATM SYSTEM - SECURITY ARCHITECTURE
+================================================================================
+
+SECURITY UPGRADES IMPLEMENTED (2024)
+=====================================
+
+1. ENHANCED CHALLENGE-RESPONSE AUTHENTICATION
+   - PHP generates cryptographic nonce for each request
+   - Python service returns HMAC-signed responses
+   - Prevents replay attacks and response tampering
+   - 5-minute nonce expiry window
+   - AES-256 encryption for sensitive data
+   - Rate limiting with progressive delays
+
+2. SECURE SERVICE ARCHITECTURE
+   - Flask-based Python service on localhost:5000
+   - JSON API with comprehensive input validation
+   - No shell execution from PHP (eliminates injection risks)
+   - Service isolation and error handling
+   - Windows Hello API integration
+   - Infrared camera auto-detection
+   - Real-time liveness detection algorithms
+
+3. SERVER-SIDE SESSION MANAGEMENT
+   - Cryptographic session IDs stored in database
+   - Session binding to user ID, timestamp, and auth method
+   - Automatic session expiration (1 hour default)
+   - Prevents session hijacking and fixation
+
+4. ENHANCED BIOMETRIC DATA LIFECYCLE HYGIENE
+   - Raw biometric captures deleted immediately after processing
+   - Only encrypted templates stored in database
+   - Clear audit trail of data destruction
+   - GDPR/privacy compliance built-in
+   - Windows Hello secure enclave integration
+   - Biometric data never leaves TPM when using hardware
+   - Template versioning and migration support
+
+5. COMPREHENSIVE SECURITY LOGGING
+   - All authentication attempts logged with metadata
+   - NO raw biometric data in logs (security by design)
+   - Session tracking and audit trails
+   - Rate limiting and attempt monitoring
+
+SECURITY COMPONENTS
+===================
+
+PHP Components:
+- core/BiometricAuth.php - Secure authentication handler
+- api/secure_biometric_auth.php - New secure endpoint
+- Enhanced Session.php - Secure session validation
+
+Python Components:
+- python/biometric_service.py - Flask service with HMAC
+- python/start_service.py - Service launcher with dependency checks
+- python/windows_hello.py - Windows Hello integration
+- python/liveness_detection.py - Anti-spoofing algorithms
+- python/camera_test.py - Hardware detection and testing
+- Proper biometric processing with immediate cleanup
+
+Database Security:
+- secure_sessions table - Server-side session storage
+- auth_logs table - Comprehensive audit logging
+- Encrypted biometric templates only
+- No raw biometric data persistence
+
+AUTHENTICATION FLOW
+====================
+
+1. PHP generates cryptographic nonce
+2. PHP sends nonce + biometric data to Python service
+3. Python performs biometric verification
+4. Python returns signed response (result + nonce + timestamp + HMAC)
+5. PHP verifies HMAC signature and timestamp
+6. PHP creates secure session with database binding
+7. Raw biometric data deleted from all temporary storage
+
+SECURITY FEATURES
+=================
+
+- AES-256 equivalent HMAC signatures
+- Cryptographically secure nonce generation
+- Time-based replay attack prevention
+- Rate limiting (5 attempts per 15 minutes)
+- Secure session binding and validation
+- Immediate biometric data destruction
+- Comprehensive audit logging
+- Input validation and sanitization
+- Error handling without information leakage
+
+BACKWARD COMPATIBILITY
+======================
+
+- Legacy API endpoints still functional
+- Gradual migration to secure system
+- Old session format supported
+- Same response format maintained
+- No breaking changes for existing code
+
+PRODUCTION SECURITY CHECKLIST (2024)
+=====================================
+
+□ Change SHARED_SECRET in python/biometric_service.py
+□ Update all default passwords
+□ Enable HTTPS/SSL certificates
+□ Configure firewall rules
+□ Set up database backups
+□ Enable comprehensive logging
+□ Test biometric service startup
+□ Verify session timeout settings
+□ Review audit log retention policies
+□ Test rate limiting functionality
+□ Configure Windows Hello policies
+□ Test infrared camera functionality
+□ Verify liveness detection accuracy
+□ Set up monitoring and alerting
+□ Test failover mechanisms
+
+COMPLIANCE NOTES
+=================
+
+- Biometric data handling follows privacy regulations
+- Audit logs support compliance requirements
+- Data retention policies implemented
+- User consent mechanisms in place
+- Security incident logging enabled
+
+================================================================================
+                            END OF SECURITY ARCHITECTURE
+================================================================================

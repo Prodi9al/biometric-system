@@ -1,0 +1,286 @@
+================================================================================
+                    GCTU BIOMETRIC ATM SYSTEM - DEPLOYMENT GUIDE
+================================================================================
+
+SYSTEM REQUIREMENTS
+===================
+
+MINIMUM HARDWARE REQUIREMENTS:
+- CPU: Intel Core i3 or AMD equivalent (2.0 GHz+)
+- RAM: 4 GB minimum, 8 GB recommended
+- Storage: 2 GB free disk space
+- Network: Ethernet or Wi-Fi connection
+- Camera: USB webcam or built-in camera (720p minimum)
+- Biometric: Windows Hello compatible device (optional)
+
+OPERATING SYSTEM SUPPORT:
+- Windows 10/11 (Primary)
+- Windows Server 2016/2019/2022
+- Linux Ubuntu 18.04+ (Advanced users)
+- macOS 10.15+ (Development only)
+
+SOFTWARE REQUIREMENTS:
+- XAMPP 8.0+ (Apache 2.4+, MySQL 8.0+, PHP 7.4+)
+- Python 3.8+ with pip package manager
+- Modern web browser (Chrome 90+, Firefox 88+, Edge 90+)
+- Visual C++ Redistributable (for Python packages)
+
+NETWORK REQUIREMENTS:
+- Internet connection for initial setup
+- Local network access for multi-terminal deployment
+- HTTPS certificate for production (recommended)
+- Firewall ports: 80 (HTTP), 443 (HTTPS), 3306 (MySQL)
+
+INSTALLATION GUIDE
+==================
+
+STEP 1: DOWNLOAD AND EXTRACT
+1. Download XAMPP from https://www.apachefriends.org/
+2. Install XAMPP to default location (C:\xampp\)
+3. Extract biometric system to: C:\xampp\htdocs\biometric system\
+
+STEP 2: EASY INSTALLATION (RECOMMENDED)
+1. Double-click `install-all.bat`
+2. Follow the on-screen prompts
+3. The system will automatically:
+   - Configure security keys
+   - Install Python dependencies
+   - Setup the database
+   - Start the service
+   - Launch the application
+
+--- OR CONTINUE WITH MANUAL INSTALLATION BELOW ---
+
+STEP 3: EXTENDED MANUAL SETUP (FOR EXPERTS)
+1. Download Python 3.10+ from https://www.python.org/downloads/
+2. During installation, check "Add Python to PATH"
+3. Navigate to: cd "C:\xampp\htdocs\biometric system\python"
+4. Double-click: install_requirements.bat (auto-installs all packages)
+5. Alternative manual install:
+   pip install opencv-python==4.8.1.78
+   pip install numpy==1.24.3
+   pip install face-recognition==1.3.0
+   pip install dlib==19.24.2
+   pip install cmake==3.27.7
+   pip install Pillow==10.0.1
+   pip install scipy==1.11.3
+   pip install scikit-image==0.21.0
+   pip install imutils==0.5.4
+   pip install pywin32==306
+   pip install winrt==1.0.21215.1
+6. Verify installation: python -c "import cv2, numpy, face_recognition, dlib"
+
+STEP 3: START XAMPP SERVICES
+1. Open XAMPP Control Panel as Administrator
+2. Start Apache service
+3. Start MySQL service
+4. Verify both services show "Running" status
+
+STEP 4: DATABASE SETUP
+Recommended Method:
+1. Open browser: http://localhost/biometric%20system/create_tables.php
+2. Click to create database and tables automatically
+3. System will generate proper password hashes and security tables
+
+Alternative Method - Manual phpMyAdmin:
+1. Open phpMyAdmin: http://localhost/phpmyadmin
+2. Create database: biometric_atm_db
+3. Import file: database/clean-setup.sql
+4. Run: http://localhost/biometric%20system/reset_admin.php (to fix password)
+
+STEP 5: START SECURE BIOMETRIC SERVICE
+1. Double-click: start_biometric_service.bat
+2. Wait for "Flask service running on http://127.0.0.1:5000" message
+3. Keep this window open while using the system
+4. Service provides:
+   - HMAC-signed authentication
+   - Windows Hello integration
+   - Infrared camera support
+   - Real-time liveness detection
+   - Secure session management
+
+STEP 6: SYSTEM VERIFICATION
+1. Access admin panel: http://localhost/biometric%20system/admin/login-modern.php
+2. Login with: Staff ID "ADM001", Password "admin123"
+3. Access customer portal: http://localhost/biometric%20system/public/atm-login-sequential.php
+4. Test with: Account "2023 8841 9920 1102", PIN "1234"
+5. Verify biometric service: http://127.0.0.1:5000/health
+6. Test Windows Hello: python/windows_hello.py check
+7. Test camera detection: python/camera_test.py
+
+PRODUCTION DEPLOYMENT
+=====================
+
+SECURITY CONFIGURATION:
+1. Change all default passwords immediately
+2. Update SHARED_SECRET in core/BiometricAuth.php and python/biometric_service.py
+3. Enable HTTPS with SSL certificate
+4. Configure firewall to block unnecessary ports
+5. Set up regular database backups
+6. Enable PHP error logging (disable display_errors)
+7. Ensure Python biometric service runs on localhost only
+
+DATABASE OPTIMIZATION:
+1. Create database user with limited privileges
+2. Enable MySQL query caching
+3. Set up database replication for high availability
+4. Configure automatic backup schedules
+5. Monitor database performance and optimize queries
+
+WEB SERVER CONFIGURATION:
+1. Configure Apache virtual hosts
+2. Enable mod_rewrite and mod_ssl
+3. Set proper file permissions (755 for directories, 644 for files)
+4. Configure PHP settings (memory_limit, max_execution_time)
+5. Enable gzip compression for better performance
+
+BIOMETRIC HARDWARE SETUP (2024):
+1. Install camera drivers and test functionality
+2. Configure Windows Hello fingerprint and face recognition
+3. Test WebAuthn compatibility in browsers
+4. Verify infrared camera detection (if available)
+5. Set up backup authentication methods
+6. Calibrate biometric thresholds for accuracy
+7. Test liveness detection with real vs photo attempts
+
+TROUBLESHOOTING & RECOVERY (2025 UPDATE)
+=====================================
+
+CRITICAL: ENVIRONMENT CORRUPTION FIX
+If you encounter "Unsupported Image Type" or "dlib" errors:
+1. Close all command windows
+2. Double-click: `rebuild_environment.bat`
+   - This safely deletes the corrupted `python/venv`
+   - It rebuilds using `--system-site-packages` to inherit working Global libraries
+   - Inherits: dlib, opencv, face_recognition
+3. Restart the system with `RUN_SYSTEM.bat`
+
+CRITICAL: SECURITY CONFIGURATION
+1. SHARED_SECRET Management:
+   - The system now auto-strips whitespace from SHARED_SECRET
+   - Ensure your .env file has a 32+ character SHARED_SECRET
+   - If Auth Fails (HMAC Mismatch): Check that PHP and Python .env values match exactly
+
+TROUBLESHOOTING
+===============
+
+COMMON ISSUES:
+
+Apache Won't Start:
+- Check if port 80 is in use (Skype, IIS)
+- Run XAMPP as Administrator
+- Change Apache port in httpd.conf if needed
+
+Python Dependencies Fail:
+- For dlib on Windows: Use .whl file instead of pip install
+- Download from: https://pypi.org/project/dlib/#files
+- Install Visual C++ Redistributable if needed
+- Use: pip install --upgrade pip
+- Install packages individually if batch fails
+- Check Python version compatibility
+
+Camera Access Denied:
+- Check Windows privacy settings
+- Allow camera access for browsers
+- Test with different browsers
+- Verify camera drivers are installed
+
+Database Connection Errors:
+- Verify MySQL service is running
+- Check database credentials in config.php
+- Ensure database exists and tables are created
+- Test connection with phpMyAdmin
+
+Biometric Recognition Fails:
+- Ensure good lighting conditions
+- Clean camera lens
+- Test with different users
+- Check Python modules are installed correctly
+
+MAINTENANCE
+===========
+
+DAILY TASKS:
+- Monitor system logs for errors
+- Check database backup completion
+- Verify all services are running
+- Review failed authentication attempts
+
+WEEKLY TASKS:
+- Update system statistics
+- Clean temporary files and logs
+- Test backup restoration procedures
+- Review user access and permissions
+
+MONTHLY TASKS:
+- Update software components
+- Review security configurations
+- Analyze system performance metrics
+- Update documentation and procedures
+
+BACKUP PROCEDURES:
+1. Database: Export via phpMyAdmin or mysqldump
+2. Files: Copy entire biometric system folder
+3. Configuration: Backup config/ directory
+4. Logs: Archive transaction and error logs
+5. Test: Verify backup integrity regularly
+
+MONITORING:
+- Set up log monitoring for errors
+- Monitor disk space usage
+- Track database performance
+- Monitor network connectivity
+- Set up alerts for system failures
+
+SUPPORT CONTACTS
+================
+
+Technical Issues:
+- Check system logs in logs/ directory
+- Review error messages in browser console
+- Test individual components separately
+- Verify all dependencies are installed
+
+For advanced support:
+- Document exact error messages
+- Provide system configuration details
+- Include relevant log file entries
+- Test with minimal configuration
+
+COMPLIANCE NOTES
+================
+
+Data Protection:
+- Biometric data is encrypted with AES-256
+- Personal information follows data protection regulations
+- Audit logs maintain transaction integrity
+- User consent required for biometric enrollment
+
+Security Standards:
+- System follows banking security guidelines
+- Regular security updates recommended
+- Penetration testing advised for production
+- Compliance with local banking regulations required
+
+
+--------------------------------------------------------------------------------
+   REMOTE ACCESS / MOBILE TESTING (NGROK)
+--------------------------------------------------------------------------------
+To test the biometric camera on a mobile phone or external device:
+
+1. Run `start-ngrok.bat` on this computer.
+2. Look for the "Forwarding" line in the black window.
+   It will look like: https://abc-123.ngrok-free.app -> http://localhost:80
+
+3. On your phone, open that URL followed by your project path:
+   
+   Format:  [Ngrok URL] / biometric system / public / login.php
+   Example: https://abc-123.ngrok-free.app/biometric%20system/public/login.php
+
+   IMPORTANT: 
+   - You MUST use the 'https://' version (Secure).
+   - Mobile browsers require HTTPS to allow camera access for face/login.
+
+================================================================================
+                            END OF DEPLOYMENT GUIDE
+================================================================================
