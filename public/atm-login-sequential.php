@@ -352,23 +352,60 @@ if ($isStep2) {
             }
         }
         async function startFingerprint() {
-            updateStatus('finger', 'active', 'Place finger on sensor...');
+            updateStatus('finger', 'active', 'Touch fingerprint sensor...');
             
-            // SIMULATION ONLY - To prevent crashes
-            setTimeout(() => {
-                updateStatus('finger', 'success', 'Verified (Soft Check)');
-                setTimeout(completeAuth, 500);
-            }, 1000);
+            try {
+                // Get WebAuthn challenge for authentication
+                const challengeResponse = await fetch('../api/get_webauthn_challenge.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userData.userId })
+                });
+                const challengeData = await challengeResponse.json();
+                
+                if (!challengeData.success) {
+                    throw new Error(challengeData.message || 'Failed to get challenge');
+                }
+                
+                // Authenticate using WebAuthn (Windows Hello / TouchID / etc.)
+                const assertion = await WebAuthn.authenticate(
+                    challengeData.challenge,
+                    challengeData.credential_ids || []
+                );
+                
+                // Verify the assertion with backend
+                const verifyResponse = await fetch('../api/secure_biometric_auth.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userData.userId,
+                        biometric_data: JSON.stringify(assertion),
+                        modality: 'fingerprint'
+                    })
+                });
+                
+                const verifyResult = await verifyResponse.json();
+                
+                if (verifyResult.success) {
+                    updateStatus('finger', 'success', `Verified (Confidence: ${verifyResult.confidence}%)`);
+                    userData.finger = assertion;
+                    completeAuth();
+                } else {
+                    throw new Error(verifyResult.error || 'Fingerprint verification failed');
+                }
+                
+            } catch (err) {
+                console.error("Fingerprint error:", err);
+                showError("Fingerprint verification failed: " + err.message);
+            }
         }
 
         async function completeAuth() {
-            // Final Verification Call
             try {
-                // Here we would send the WebAuthn assertion to backend verify
                 document.getElementById('scanningState').classList.add('hidden');
                 document.getElementById('successState').classList.remove('hidden');
                 
-                // Redirect
+                // Redirect to dashboard
                 setTimeout(() => {
                     window.location.href = 'dashboard-modern.php';
                 }, 1500);

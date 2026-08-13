@@ -33,6 +33,7 @@ if not SHARED_SECRET_STR or len(SHARED_SECRET_STR.strip()) < 32:
     raise ValueError("CRITICAL: SHARED_SECRET missing or too short (must be >= 32 chars)")
 SHARED_SECRET = SHARED_SECRET_STR.strip().encode() # INVARIANT: Immutable bytes for HMAC signing
 MAX_REQUEST_AGE = 300  # 5 minutes
+BIOMETRIC_THRESHOLD = float(os.getenv('BIOMETRIC_THRESHOLD', '85.0'))
 
 class BiometricProcessor:
     """
@@ -55,11 +56,6 @@ class BiometricProcessor:
             # Validate input data
             if not biometric_data or not isinstance(biometric_data, str):
                 return False, 0.0, "Invalid biometric data format"
-            
-            # Check if this is simulated biometric data (for demo)
-            if biometric_data.startswith('face_template_') or biometric_data.startswith('windows_hello_'):
-                # ... legacy sim code ...
-                return authenticated, round(confidence, 2), "Simulation mode"
             
             # Handle actual base64 image data
             try:
@@ -135,7 +131,7 @@ class BiometricProcessor:
             confidence = max(0, (1 - face_distances[0]) * 100)
             
             # FAIL-SECURE: Strict threshold - only authenticate if confidence is high
-            if confidence >= 50.0:
+            if confidence >= BIOMETRIC_THRESHOLD:
                 authenticated = True
             else:
                  reason = f"Low confidence: {round(confidence, 2)}%"
@@ -174,10 +170,10 @@ class BiometricProcessor:
             # In production, this would interface with Windows Hello or hardware scanner
             success_rate = 0.75  # 75% success rate for demo
             if np.random.random() < success_rate:
-                confidence = np.random.uniform(87.0, 96.0)
+                confidence = np.random.uniform(BIOMETRIC_THRESHOLD + 2, 96.0)
                 authenticated = True
             else:
-                confidence = np.random.uniform(65.0, 84.0)  # Below threshold
+                confidence = np.random.uniform(max(65.0, BIOMETRIC_THRESHOLD - 20), BIOMETRIC_THRESHOLD - 1)
                 authenticated = False
             
             return authenticated, round(confidence, 2)
@@ -272,9 +268,6 @@ class BiometricProcessor:
             print(f"Template loading error: {e}")
             return None
 
-import json
-
-# ... (rest of imports)
 
 def create_signed_response(authenticated: bool, nonce: str, timestamp: int, 
                          confidence: float = 0.0, failure_reason: str = None) -> Dict:
@@ -439,7 +432,7 @@ def verify_biometric():
             return jsonify({'error': 'Unsupported modality'}), 400
         
         # FAIL-SECURE: Only create signed response if authentication succeeded
-        if authenticated and confidence >= 50.0:
+        if authenticated and confidence >= BIOMETRIC_THRESHOLD:
             response = create_signed_response(True, nonce, timestamp, confidence)
             print(f"Biometric verification SUCCESS: User {user_id}, {modality}, Confidence: {confidence}%")
         else:

@@ -1,0 +1,101 @@
+version: '3.8'
+
+services:
+  # PHP/Apache Web Service (Production)
+  web:
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-web:${IMAGE_TAG:-latest}
+    container_name: biometric-web-prod
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      SHARED_SECRET: ${SHARED_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      BIOMETRIC_THRESHOLD: ${BIOMETRIC_THRESHOLD:-85.0}
+      MAX_LOGIN_ATTEMPTS: ${MAX_LOGIN_ATTEMPTS:-3}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT:-1800}
+      APP_ENV: production
+      DEBUG: "false"
+      PHP_MEMORY_LIMIT: 512M
+    ports:
+      - "80:80"
+      - "443:443"
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+      placement:
+        constraints:
+          - node.role == manager
+    networks:
+      - biometric-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: "/ecs/biometric-web"
+        awslogs-region: ${AWS_REGION:-us-east-1}
+        awslogs-stream-prefix: "web"
+
+  # Python Biometric Service (Production)
+  biometric:
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_PREFIX}-biometric:${IMAGE_TAG:-latest}
+    container_name: biometric-python-prod
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_NAME: ${DB_NAME}
+      SHARED_SECRET: ${SHARED_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      BIOMETRIC_THRESHOLD: ${BIOMETRIC_THRESHOLD:-85.0}
+      MAX_REQUEST_AGE: ${MAX_REQUEST_AGE:-300}
+    deploy:
+      replicas: 2
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - biometric-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: awslogs
+      options:
+        awslogs-group: "/ecs/biometric-python"
+        awslogs-region: ${AWS_REGION:-us-east-1}
+        awslogs-stream-prefix: "biometric"
+
+networks:
+  biometric-network:
+    external: true
+    name: biometric-network

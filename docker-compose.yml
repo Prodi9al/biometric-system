@@ -1,0 +1,121 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: biometric-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-biometric_atm_db}
+      MYSQL_USER: ${DB_USER:-biometric}
+      MYSQL_PASSWORD: ${DB_PASS:-biometricpass}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./create_tables.php:/docker-entrypoint-initdb.d/create_tables.php:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - biometric-network
+    command: --default-authentication-plugin=mysql_native_password
+
+  # PHP/Apache Web Service
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.php
+    container_name: biometric-web
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-biometric}
+      DB_PASS: ${DB_PASS:-biometricpass}
+      DB_NAME: ${DB_NAME:-biometric_atm_db}
+      SHARED_SECRET: ${SHARED_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      BIOMETRIC_THRESHOLD: ${BIOMETRIC_THRESHOLD:-85.0}
+      MAX_LOGIN_ATTEMPTS: ${MAX_LOGIN_ATTEMPTS:-3}
+      SESSION_TIMEOUT: ${SESSION_TIMEOUT:-1800}
+      APP_ENV: ${APP_ENV:-development}
+      DEBUG: ${DEBUG:-true}
+      INIT_DB: "true"
+      PHP_MEMORY_LIMIT: 256M
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./admin:/var/www/html/admin:ro
+      - ./api:/var/www/html/api:ro
+      - ./core:/var/www/html/core:ro
+      - ./config:/var/www/html/config:ro
+      - ./create_tables.php:/var/www/html/create_tables.php:ro
+    networks:
+      - biometric-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Python Biometric Service
+  biometric:
+    build:
+      context: .
+      dockerfile: Dockerfile.python
+    container_name: biometric-python
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-biometric}
+      DB_PASS: ${DB_PASS:-biometricpass}
+      DB_NAME: ${DB_NAME:-biometric_atm_db}
+      SHARED_SECRET: ${SHARED_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      BIOMETRIC_THRESHOLD: ${BIOMETRIC_THRESHOLD:-85.0}
+      MAX_REQUEST_AGE: ${MAX_REQUEST_AGE:-300}
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./python/requirements.txt:/app/requirements.txt:ro
+    networks:
+      - biometric-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Redis for session caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: biometric-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - biometric-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  biometric-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  redis_data:

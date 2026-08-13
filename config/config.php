@@ -31,7 +31,6 @@ define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_NAME', getenv('DB_NAME') ?: 'biometric_atm_db');
 
 // Security Settings
-// Security Settings
 $envKey = getenv('ENCRYPTION_KEY');
 if (!$envKey) {
     die('CRITICAL ERROR: ENCRYPTION_KEY is missing from environment. System refused to start.');
@@ -39,9 +38,9 @@ if (!$envKey) {
 // NOTE: ENCRYPTION_KEY is for data-at-rest encryption (DB).
 // SHARED_SECRET is for service-to-service HMAC signing (loaded directly in BiometricAuth).
 define('ENCRYPTION_KEY', $envKey);
-define('SESSION_TIMEOUT', 1800); // 30 minutes
-define('MAX_LOGIN_ATTEMPTS', 3);
-define('BIOMETRIC_THRESHOLD', 50.0);
+define('SESSION_TIMEOUT', (int)(getenv('SESSION_TIMEOUT') ?: 1800));
+define('MAX_LOGIN_ATTEMPTS', (int)(getenv('MAX_LOGIN_ATTEMPTS') ?: 3));
+define('BIOMETRIC_THRESHOLD', (float)(getenv('BIOMETRIC_THRESHOLD') ?: 85.0));
 
 // Application Settings
 define('BANK_NAME', 'Ghana Secure Bank');
