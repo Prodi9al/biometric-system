@@ -28,7 +28,7 @@ FAIL-SECURE FEATURES:
 
 TEST ACCOUNTS:
 Customer: 2023 8841 9920 1102 (PIN: 1234)
-Admin: ADM001 (Password: admin123)
+Admin: ADM001 — password generated randomly at setup (see create_tables.php); change with reset_admin.php "StrongNewPassword123"
 
 USING THE SYSTEM:
 1. Enter account number

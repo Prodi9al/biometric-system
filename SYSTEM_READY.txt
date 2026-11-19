@@ -39,7 +39,7 @@ READY FOR DEPLOYMENT:
 
 TEST CREDENTIALS:
 - Customer: Account "2023 8841 9920 1102", PIN "1234"
-- Admin: Staff ID "ADM001", Password "admin123"
+- Admin: Staff ID "ADM001" — password generated randomly at setup (see create_tables.php); change with reset_admin.php "StrongNewPassword123"
 
 MAIN INTERFACES:
 - Customer Login: public/login.php

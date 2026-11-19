@@ -7,7 +7,15 @@
    - ✅ Implemented random IV generation per encryption
    - ✅ Added proper base64 encoding for encrypted data
 
-2. **Database Security**
+2. **Default Credentials (2026-11-19)**
+   - ✅ Removed the hardcoded `admin123` default admin password from
+     `create_tables.php` — the admin password is now generated randomly at
+     setup and printed once (not stored in the repo).
+   - ✅ `reset_admin.php` no longer hardcodes or echoes a password; it takes a
+     new password as an argument, enforces strength (8+ chars, mixed case +
+     digit), and is local-only over HTTP.
+
+3. **Database Security**
    - ✅ Added strong password requirement
    - ✅ Implemented proper error handling
    - ✅ Added charset configuration for security

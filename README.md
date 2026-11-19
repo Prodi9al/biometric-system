@@ -32,7 +32,9 @@ The system supports **Industry Standard High-Assurance Authentication**:
 
 - **Account**: 2023 8841 9920 1102
 - **PIN**: 1234
-- **Admin**: Staff ID "ADM001", Password "admin123"
+- **Admin**: Staff ID `ADM001`. The admin password is **generated randomly at
+  setup** (see `create_tables.php`) and printed once — it is not stored in this
+  repo. Change it later with `reset_admin.php "StrongNewPassword123"`.
 
 ## Security
 

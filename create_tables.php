@@ -109,7 +109,9 @@ try {
         ('2023 7752 8831 2203', 'Jane Smith', '$2y$10\$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3500.00)");
     echo "✅ Sample customers inserted\n";
     
-    // Create proper password hash for 'admin123'
+    // Create a RANDOM admin password on first setup — never a weak default.
+    // The password is printed once here; the user must record it. It is not
+    // stored anywhere in this repo. Use reset_admin.php to change it later.
     echo "Creating security tables...\n";
     
     // Secure sessions table
@@ -136,7 +138,8 @@ try {
     echo "✅ 'auth_logs' table created\n";
     
     echo "Creating admin user...\n";
-    $admin_hash = password_hash('admin123', PASSWORD_DEFAULT);
+    $admin_password = bin2hex(random_bytes(16)); // 32-char random, never committed
+    $admin_hash = password_hash($admin_password, PASSWORD_DEFAULT);
     $stmt = $pdo->prepare("INSERT IGNORE INTO admin_users (staff_id, full_name, email, password_hash, role) VALUES (?, ?, ?, ?, ?)");
     $stmt->execute(['ADM001', 'System Administrator', 'admin@ghanabank.com', $admin_hash, 'admin']);
     echo "✅ Admin user created\n";
@@ -145,7 +148,8 @@ try {
     echo "</pre>";
     echo "<h3>Test Login Credentials:</h3>";
     echo "<p><strong>Customer:</strong> Account: 2023 8841 9920 1102, PIN: 1234</p>";
-    echo "<p><strong>Admin:</strong> Staff ID: ADM001, Password: admin123</p>";
+    echo "<p><strong>Admin:</strong> Staff ID: ADM001, Password: <strong>" . htmlspecialchars($admin_password) . "</strong></p>";
+    echo "<p><em>Write this password down — it is not stored anywhere else.</em></p>";
     echo "<p><a href='public/login.php' style='margin-right:20px;'>Customer Login</a>";
     echo "<a href='admin/login-modern.php'>Admin Login</a></p>";
     

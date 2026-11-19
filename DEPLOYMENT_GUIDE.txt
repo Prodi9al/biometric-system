@@ -101,7 +101,7 @@ STEP 5: START SECURE BIOMETRIC SERVICE
 
 STEP 6: SYSTEM VERIFICATION
 1. Access admin panel: http://localhost/biometric%20system/admin/login-modern.php
-2. Login with: Staff ID "ADM001", Password "admin123"
+2. Login with: Staff ID "ADM001" — the admin password is generated randomly at setup (see create_tables.php) and printed once; change it with reset_admin.php "StrongNewPassword123"
 3. Access customer portal: http://localhost/biometric%20system/public/atm-login-sequential.php
 4. Test with: Account "2023 8841 9920 1102", PIN "1234"
 5. Verify biometric service: http://127.0.0.1:5000/health
